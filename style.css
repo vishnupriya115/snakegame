@@ -4,8 +4,9 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
-    background-color: #f0f0f0;
-    font-family: Arial, sans-serif;
+    background-color: #282c34;
+    font-family: 'Arial', sans-serif;
+    color: #61dafb;
 }
 
 .game-container {
@@ -13,12 +14,14 @@ body {
 }
 
 #gameCanvas {
-    background-color: #000;
-    border: 1px solid #fff;
+    background: linear-gradient(145deg, #1e1f26, #282c34);
+    border: 2px solid #61dafb;
+    border-radius: 10px;
+    box-shadow: 0px 0px 20px 5px #61dafb;
 }
 
 #score {
     font-size: 24px;
-    color: #333;
-    margin-top: 10px;
+    margin-top: 15px;
+    color: #fff;
 }

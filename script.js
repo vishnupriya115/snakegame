@@ -14,15 +14,19 @@ function draw() {
 
     // Draw snake
     snake.forEach((segment, index) => {
-        ctx.fillStyle = index === 0 ? "green" : "white"; // head is green, body is white
+        ctx.fillStyle = index === 0 ? "#2ecc71" : "#27ae60"; // head is bright green, body is darker green
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = "#2ecc71"; // Add glow effect to the snake
         ctx.fillRect(segment.x, segment.y, box, box);
 
-        ctx.strokeStyle = "black";
+        ctx.strokeStyle = "#34495e";
         ctx.strokeRect(segment.x, segment.y, box, box);
     });
 
-    // Draw food
-    ctx.fillStyle = "red";
+    // Draw food with a glow
+    ctx.fillStyle = "#e74c3c"; // Red food
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#e74c3c";
     ctx.fillRect(food.x, food.y, box, box);
 
     // Move the snake
