@@ -1,46 +1,90 @@
-document.getElementById('addTaskBtn').addEventListener('click', addTask);
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
 
-function addTask() {
-  const taskInput = document.getElementById('taskInput');
-  const taskText = taskInput.value;
+const box = 20; // size of one snake box
+let snake = [{ x: 9 * box, y: 9 * box }]; // snake starts in the middle of the grid
+let food = { x: Math.floor(Math.random() * 19) * box, y: Math.floor(Math.random() * 19) * box };
+let direction = null;
+let score = 0;
 
-  if (taskText === '') {
-    alert('Please enter a task.');
-    return;
-  }
+// Draw the snake and food
+function draw() {
+    // Clear the canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const taskList = document.getElementById('taskList');
+    // Draw snake
+    snake.forEach((segment, index) => {
+        ctx.fillStyle = index === 0 ? "green" : "white"; // head is green, body is white
+        ctx.fillRect(segment.x, segment.y, box, box);
 
-  const li = document.createElement('li');
-  
-  const taskSpan = document.createElement('span');
-  taskSpan.classList.add('task-text');
-  taskSpan.textContent = taskText;
-  
-  const editBtn = document.createElement('button');
-  editBtn.textContent = 'Edit';
-  editBtn.classList.add('edit');
-  editBtn.addEventListener('click', () => editTask(taskSpan));
+        ctx.strokeStyle = "black";
+        ctx.strokeRect(segment.x, segment.y, box, box);
+    });
 
-  const deleteBtn = document.createElement('button');
-  deleteBtn.textContent = 'Delete';
-  deleteBtn.classList.add('delete');
-  deleteBtn.addEventListener('click', () => taskList.removeChild(li));
-  
-  const hr = document.createElement('hr');
-  
-  li.appendChild(taskSpan);
-  li.appendChild(editBtn);
-  li.appendChild(deleteBtn);
-  li.appendChild(hr);
-  
-  taskList.appendChild(li);
-  taskInput.value = '';
+    // Draw food
+    ctx.fillStyle = "red";
+    ctx.fillRect(food.x, food.y, box, box);
+
+    // Move the snake
+    let snakeX = snake[0].x;
+    let snakeY = snake[0].y;
+
+    if (direction === "LEFT") snakeX -= box;
+    if (direction === "UP") snakeY -= box;
+    if (direction === "RIGHT") snakeX += box;
+    if (direction === "DOWN") snakeY += box;
+
+    // Check if the snake eats the food
+    if (snakeX === food.x && snakeY === food.y) {
+        // Increase score
+        score++;
+        document.getElementById("score").innerHTML = "Score: " + score;
+
+        // Randomize new food location
+        food = {
+            x: Math.floor(Math.random() * 19) * box,
+            y: Math.floor(Math.random() * 19) * box
+        };
+    } else {
+        // Remove the last part of the snake if not eating food
+        snake.pop();
+    }
+
+    // Add new head to the snake
+    let newHead = { x: snakeX, y: snakeY };
+
+    // Check for collisions with wall or self
+    if (snakeX < 0 || snakeY < 0 || snakeX >= canvas.width || snakeY >= canvas.height || collision(newHead, snake)) {
+        clearInterval(game); // Stop the game
+        alert("Game Over! Your score is: " + score);
+        location.reload(); // Reload the page to restart the game
+    }
+
+    snake.unshift(newHead);
 }
 
-function editTask(taskSpan) {
-  const newTask = prompt('Edit your task:', taskSpan.textContent);
-  if (newTask !== null && newTask.trim() !== '') {
-    taskSpan.textContent = newTask;
-  }
+// Check for snake collision with itself
+function collision(head, snake) {
+    for (let i = 0; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+            return true;
+        }
+    }
+    return false;
 }
+
+// Control the snake with arrow keys
+document.addEventListener("keydown", event => {
+    if (event.keyCode === 37 && direction !== "RIGHT") {
+        direction = "LEFT";
+    } else if (event.keyCode === 38 && direction !== "DOWN") {
+        direction = "UP";
+    } else if (event.keyCode === 39 && direction !== "LEFT") {
+        direction = "RIGHT";
+    } else if (event.keyCode === 40 && direction !== "UP") {
+        direction = "DOWN";
+    }
+});
+
+// Start the game loop
+let game = setInterval(draw, 100);
